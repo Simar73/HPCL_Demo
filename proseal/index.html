@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProSeal Solutions – Distributor Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f4f6f9; --surface:#ffffff; --border:#dde3ed; --navy:#1b2a47; --navy-light:#2e4272; --teal:#007f6e; --teal-light:#00a38e; --teal-bg:#e8f5f3; --orange:#e05c1a; --text:#1b2a47; --text-mid:#5a6a85; --text-light:#8a97aa; --shadow:0 2px 8px rgba(27,42,71,0.08); --shadow-lg:0 8px 32px rgba(27,42,71,0.14); --radius:10px; }
+  *{box-sizing:border-box;margin:0;padding:0;} body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1b2a47 0%,#007f6e 100%);position:relative;overflow:hidden;}
+  #login-screen::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(255,255,255,0.04);top:-200px;right:-100px;}
+  .login-card{background:white;border-radius:16px;width:440px;padding:48px 44px;box-shadow:0 24px 80px rgba(0,0,0,0.3);position:relative;z-index:1;}
+  .login-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-bg);color:var(--teal);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:0.05em;margin-bottom:20px;}
+  .login-badge::before{content:'●';font-size:8px;}
+  .login-h1{font-size:28px;font-weight:700;color:var(--navy);margin-bottom:6px;} .login-sub{font-size:14px;color:var(--text-mid);margin-bottom:32px;}
+  .fl{margin-bottom:18px;} .fl label{display:block;font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:6px;}
+  .fl input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+  .fl input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,127,110,0.12);}
+  .login-btn{width:100%;background:var(--teal);color:white;border:none;border-radius:8px;padding:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+  .login-btn:hover{background:var(--teal-light);}
+  .login-hint{font-size:12px;color:var(--text-light);margin-top:14px;text-align:center;} .login-hint strong{color:var(--teal);font-family:'DM Mono',monospace;}
+  .login-error{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;color:#dc2626;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
+  #app{display:none;}
+  .topnav{background:var(--navy);height:64px;display:flex;align-items:center;padding:0 32px;gap:40px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+  .nav-logo{display:flex;align-items:center;gap:10px;color:white;font-size:16px;font-weight:700;margin-right:auto;}
+  .nav-logo-dot{width:30px;height:30px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;}
+  .nav-link{color:rgba(255,255,255,0.6);font-size:14px;font-weight:500;cursor:pointer;padding:6px 0;border-bottom:2px solid transparent;transition:all 0.2s;}
+  .nav-link:hover,.nav-link.active{color:white;border-bottom-color:var(--teal);}
+  .nav-cart-btn{display:flex;align-items:center;gap:8px;background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+  .nav-cart-btn:hover{background:var(--teal-light);} .cart-pill{background:var(--orange);color:white;border-radius:12px;padding:1px 7px;font-size:11px;font-weight:700;}
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);padding:40px;color:white;}
+  .hero-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
+  .hero h2{font-size:26px;font-weight:700;} .hero p{font-size:14px;color:rgba(255,255,255,0.65);margin-top:6px;}
+  .hero-search{display:flex;background:white;border-radius:10px;overflow:hidden;box-shadow:var(--shadow-lg);}
+  .hero-search input{border:none;padding:12px 18px;font-family:'DM Sans',sans-serif;font-size:14px;width:280px;outline:none;color:var(--text);}
+  .hero-search button{background:var(--teal);color:white;border:none;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+  .page{display:none;} .page.active{display:block;}
+  .container{max-width:1200px;margin:0 auto;padding:32px;}
+  .filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center;}
+  .chip-label{font-size:12px;color:var(--text-mid);font-weight:600;margin-right:4px;}
+  .chip{background:white;border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all 0.15s;}
+  .chip:hover,.chip.active{background:var(--teal-bg);border-color:var(--teal);color:var(--teal);}
+  .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+  .product-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow 0.2s,transform 0.2s;border:1.5px solid transparent;}
+  .product-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:var(--teal);}
+  .card-img{height:100px;background:linear-gradient(135deg,#e8f5f3,#d4ede9);display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;}
+  .card-type-tag{position:absolute;top:10px;left:10px;background:white;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--teal);letter-spacing:0.05em;}
+  .card-body{padding:16px;} .card-part{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-mid);margin-bottom:4px;}
+  .card-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:10px;line-height:1.3;}
+  .card-specs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+  .spec{background:var(--bg);border-radius:6px;padding:6px 8px;} .spec-label{font-size:9px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;} .spec-val{font-size:12px;font-weight:600;color:var(--navy);margin-top:1px;}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:14px;}
+  .card-price{font-size:18px;font-weight:700;color:var(--navy);} .card-price span{font-size:11px;color:var(--text-mid);font-weight:400;}
+  .add-card-btn{background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;}
+  .add-card-btn:hover{background:var(--teal-light);}
+  .stock-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;} .stock-dot.green{background:#22c55e;} .stock-dot.amber{background:#f59e0b;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(27,42,71,0.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:white;border-radius:16px;width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.25);animation:modalIn 0.25s ease;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(0.98);}to{opacity:1;transform:none;}}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid var(--border);}
+  .modal-title{font-size:18px;font-weight:700;color:var(--navy);} .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-mid);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+  .modal-close:hover{background:var(--bg);} .modal-body{padding:28px;}
+  .steps{display:flex;align-items:center;margin-bottom:28px;}
+  .step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;} .step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+  .step.done .step-num{background:var(--teal);color:white;} .step.active .step-num{background:var(--navy);color:white;} .step.pending .step-num{background:var(--border);color:var(--text-mid);} .step.pending .step-label{color:var(--text-light);}
+  .step-divider{flex:1;height:2px;background:var(--border);margin:0 8px;} .step-divider.done{background:var(--teal);}
+  .modal-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;}
+  .modal-table thead th{background:var(--bg);padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.06em;}
+  .modal-table tbody td{padding:10px 12px;border-bottom:1px solid var(--border);}
+  .mq{width:56px;border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;text-align:center;font-family:'DM Mono',monospace;font-size:13px;color:var(--text);outline:none;}
+  .del-btn{background:none;border:none;color:#ef4444;font-size:16px;cursor:pointer;}
+  .order-total-row{display:flex;justify-content:space-between;padding:10px 0;font-size:13px;color:var(--text-mid);}
+  .order-total-row.grand{font-size:16px;font-weight:700;color:var(--navy);border-top:2px solid var(--border);padding-top:12px;margin-top:4px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .mf label{display:block;font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:5px;}
+  .mf input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;}
+  .mf input:focus{border-color:var(--teal);} .mf-full{grid-column:1/-1;}
+  .modal-footer{display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-top:1px solid var(--border);}
+  .btn-back{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-mid);}
+  .btn-next{background:var(--teal);color:white;border:none;border-radius:8px;padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn-next:hover{background:var(--teal-light);}
+  .confirm-success{text-align:center;padding:16px 0;}
+  .confirm-check{width:64px;height:64px;background:var(--teal-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;color:var(--teal);}
+  .conf-order-id{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--navy);margin-bottom:6px;}
+  .conf-sub{font-size:14px;color:var(--text-mid);margin-bottom:28px;}
+  .conf-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;margin-bottom:20px;}
+  .conf-detail{background:var(--bg);border-radius:8px;padding:12px 14px;}
+  .conf-detail-label{font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+  .conf-detail-val{font-size:13px;font-weight:600;color:var(--navy);}
+  .save-rec-btn{background:var(--navy);color:white;border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text-mid);} .empty-state .big{font-size:48px;margin-bottom:12px;}
+  ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-badge">Distributor Portal</div>
+    <h1 class="login-h1">Welcome back</h1>
+    <p class="login-sub">Sign in to access ProSeal's product catalog and place orders</p>
+    <div class="login-error" id="login-error">Incorrect credentials. Please try again.</div>
+    <div class="fl"><label>Username</label><input type="text" id="username" placeholder="Your username"/></div>
+    <div class="fl"><label>Password</label><input type="password" id="password" placeholder="Your password"/></div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <p class="login-hint">Username: <strong>proseal_dist</strong> &nbsp;/&nbsp; Password: <strong>Pr0S3al#9</strong></p>
+  </div>
+</div>
+<div id="app">
+  <nav class="topnav">
+    <div class="nav-logo"><div class="nav-logo-dot">P</div>ProSeal Solutions</div>
+    <span class="nav-link active" onclick="showPage('catalog')">Catalog</span>
+    <span class="nav-link" onclick="showPage('orders')">My Orders</span>
+    <button class="nav-cart-btn" onclick="openCart()">🛒 Cart <span class="cart-pill" id="cart-pill">0</span></button>
+    <span style="color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;margin-left:4px" onclick="logout()">Logout</span>
+  </nav>
+  <div class="page active" id="page-catalog">
+    <div class="hero"><div class="hero-inner"><div><h2>Mechanical Seal Products</h2><p>Industrial-grade seals for pumps, mixers, and compressors</p></div>
+      <div class="hero-search"><input type="text" id="search-input" placeholder="Search by part no. or description…" oninput="filterCards()"/><button onclick="filterCards()">Search</button></div>
+    </div></div>
+    <div class="container">
+      <div class="filter-chips">
+        <span class="chip-label">Filter:</span>
+        <span class="chip active" onclick="setChip(this,'')">All</span>
+        <span class="chip" onclick="setChip(this,'Single')">Single Seal</span>
+        <span class="chip" onclick="setChip(this,'Double')">Double Seal</span>
+        <span class="chip" onclick="setChip(this,'Cartridge')">Cartridge</span>
+        <span class="chip" onclick="setChip(this,'Split')">Split Design</span>
+      </div>
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-orders"><div class="container"><div class="empty-state"><div class="big">📋</div>Order history will appear here.</div></div></div>
+</div>
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-title">Your Cart</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+<script>
+const PRODUCTS = [
+  {id:"PS-100-25",part:"PS-100-25",desc:"Single Seal — 25mm shaft",type:"Single",shaft:25,pressure:16,material:"SiC/SiC",price:138.00,emoji:"⚙️",stock:true,leadDays:4},
+  {id:"PS-100-30",part:"PS-100-30",desc:"Single Seal — 30mm shaft",type:"Single",shaft:30,pressure:16,material:"TC/Carbon",price:155.00,emoji:"⚙️",stock:true,leadDays:4},
+  {id:"PS-100-40",part:"PS-100-40",desc:"Single Seal — 40mm shaft",type:"Single",shaft:40,pressure:20,material:"SiC/SiC",price:188.00,emoji:"⚙️",stock:true,leadDays:5},
+  {id:"PS-100-50",part:"PS-100-50",desc:"Single Seal — 50mm shaft",type:"Single",shaft:50,pressure:16,material:"Al2O3/Carbon",price:172.00,emoji:"⚙️",stock:true,leadDays:8},
+  {id:"PS-200-40",part:"PS-200-40",desc:"Double Seal — 40mm shaft",type:"Double",shaft:40,pressure:25,material:"SiC/SiC",price:378.00,emoji:"🔩",stock:true,leadDays:6},
+  {id:"PS-200-50",part:"PS-200-50",desc:"Double Seal — 50mm shaft",type:"Double",shaft:50,pressure:30,material:"TC/TC",price:415.00,emoji:"🔩",stock:true,leadDays:6},
+  {id:"PS-200-65",part:"PS-200-65",desc:"Double Seal — 65mm shaft",type:"Double",shaft:65,pressure:25,material:"TC/Carbon",price:448.00,emoji:"🔩",stock:true,leadDays:10},
+  {id:"PS-300-40",part:"PS-300-40",desc:"Cartridge Seal — 40mm shaft",type:"Cartridge",shaft:40,pressure:20,material:"SiC/SiC",price:595.00,emoji:"🛠️",stock:true,leadDays:8},
+  {id:"PS-300-50",part:"PS-300-50",desc:"Cartridge Seal — 50mm shaft",type:"Cartridge",shaft:50,pressure:25,material:"TC/Carbon",price:660.00,emoji:"🛠️",stock:true,leadDays:8},
+  {id:"PS-300-65",part:"PS-300-65",desc:"Cartridge Seal — 65mm shaft",type:"Cartridge",shaft:65,pressure:25,material:"SiC/SiC",price:730.00,emoji:"🛠️",stock:true,leadDays:10},
+  {id:"PS-400-65",part:"PS-400-65",desc:"Split Seal — 65mm shaft",type:"Split",shaft:65,pressure:12,material:"SiC/SiC",price:890.00,emoji:"🔧",stock:true,leadDays:12},
+  {id:"PS-400-80",part:"PS-400-80",desc:"Split Seal — 80mm shaft",type:"Split",shaft:80,pressure:12,material:"TC/TC",price:950.00,emoji:"🔧",stock:true,leadDays:14},
+];
+let cart=[],activeFilter='',modalStep=1,orderData={};
+function calcEstDelivery(days){const date=new Date();date.setDate(date.getDate()+days);return date.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function doLogin(){
+  const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value.trim();
+  if(u==='proseal_dist'&&p==='Pr0S3al#9'){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';renderCards(PRODUCTS);}
+  else{document.getElementById('login-error').style.display='block';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function logout(){document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');}
+function setChip(el,type){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeFilter=type;filterCards();}
+function filterCards(){const q=(document.getElementById('search-input').value||'').toLowerCase();renderCards(PRODUCTS.filter(p=>(!activeFilter||p.type===activeFilter)&&(!q||p.part.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q))));}
+function renderCards(list){
+  document.getElementById('catalog-grid').innerHTML=list.map(p=>`<div class="product-card">
+    <div class="card-img"><span style="font-size:44px">${p.emoji}</span><span class="card-type-tag">${p.type}</span></div>
+    <div class="card-body">
+      <div class="card-part">${p.part}</div><div class="card-name">${p.desc}</div>
+      <div class="card-specs">
+        <div class="spec"><div class="spec-label">Shaft Ø</div><div class="spec-val">${p.shaft} mm</div></div>
+        <div class="spec"><div class="spec-label">Max Press.</div><div class="spec-val">${p.pressure} bar</div></div>
+        <div class="spec"><div class="spec-label">Material</div><div class="spec-val" style="font-size:11px">${p.material}</div></div>
+        <div class="spec"><div class="spec-label">Availability</div><div class="spec-val" style="font-size:11px"><span class="stock-dot ${p.stock?'green':'amber'}"></span>${p.stock?'In Stock':'Low Stock'}</div></div>
+      </div>
+      <div class="card-footer"><div class="card-price">$${p.price.toFixed(2)} <span>/unit</span></div><button class="add-card-btn" onclick="addToCart('${p.id}')">+ Add</button></div>
+    </div></div>`).join('');
+}
+function addToCart(id){const prod=PRODUCTS.find(p=>p.id===id),ex=cart.find(c=>c.id===id);if(ex)ex.qty++;else cart.push({...prod,qty:1});updatePill();}
+function updatePill(){document.getElementById('cart-pill').textContent=cart.reduce((s,c)=>s+c.qty,0);}
+function openCart(){modalStep=1;renderModal();document.getElementById('cart-modal').classList.add('open');}
+function closeModal(){document.getElementById('cart-modal').classList.remove('open');}
+function renderModal(){
+  document.getElementById('modal-title').textContent=modalStep===1?'Your Cart':modalStep===2?'Order Details':'Order Confirmed';
+  const body=document.getElementById('modal-body'),footer=document.getElementById('modal-footer');
+  if(modalStep===1){
+    if(cart.length===0){body.innerHTML='<div class="empty-state"><div class="big">🛒</div>Your cart is empty.</div>';footer.innerHTML='<span></span><button class="btn-next" onclick="closeModal()">Browse Catalog</button>';return;}
+    const sub=cart.reduce((s,c)=>s+c.price*c.qty,0),ship=95;
+    body.innerHTML=`<div class="steps"><div class="step active"><div class="step-num">1</div><div class="step-label">Cart</div></div><div class="step-divider"></div><div class="step pending"><div class="step-num">2</div><div class="step-label">Details</div></div><div class="step-divider"></div><div class="step pending"><div class="step-num">3</div><div class="step-label">Confirm</div></div></div>
+    <table class="modal-table"><thead><tr><th>Part No.</th><th>Description</th><th>Qty</th><th>Unit</th><th>Total</th><th></th></tr></thead><tbody>${cart.map((c,i)=>`<tr><td style="font-family:'DM Mono',monospace;font-size:12px">${c.part}</td><td style="font-size:12px">${c.desc}</td><td><input class="mq" type="number" min="1" value="${c.qty}" onchange="updateQty(${i},this.value)"/></td><td>$${c.price.toFixed(2)}</td><td style="font-weight:600">$${(c.price*c.qty).toFixed(2)}</td><td><button class="del-btn" onclick="removeItem(${i})">🗑</button></td></tr>`).join('')}</tbody></table>
+    <div class="order-total-row"><span>Subtotal</span><span>$${sub.toFixed(2)}</span></div><div class="order-total-row"><span>Freight</span><span>$${ship.toFixed(2)}</span></div><div class="order-total-row grand"><span>Total</span><span>$${(sub+ship).toFixed(2)}</span></div>`;
+    footer.innerHTML='<button class="btn-back" onclick="closeModal()">← Back to Catalog</button><button class="btn-next" onclick="goStep(2)">Continue →</button>';
+  }
+  if(modalStep===2){
+    const maxLead=Math.max(...cart.map(c=>c.leadDays));
+    body.innerHTML=`<div class="steps"><div class="step done"><div class="step-num">✓</div><div class="step-label">Cart</div></div><div class="step-divider done"></div><div class="step active"><div class="step-num">2</div><div class="step-label">Details</div></div><div class="step-divider"></div><div class="step pending"><div class="step-num">3</div><div class="step-label">Confirm</div></div></div>
+    <div class="form-grid">
+      <div class="mf"><label>Purchase Order Number</label><input type="text" id="od-po" placeholder="e.g. PO-2024-0445" value="${orderData.po||''}"/></div>
+      <div class="mf"><label>Estimated Delivery Date</label><div style="background:#f0f7f0;border:1.5px solid #b8d8b8;border-radius:8px;padding:10px 12px;font-size:14px;color:var(--teal);font-weight:500">${calcEstDelivery(maxLead)}</div><div style="font-size:11px;color:var(--text-mid);margin-top:4px">Based on longest lead time in order: ${maxLead} days</div></div>
+      <div class="mf mf-full"><label>Delivery Site / Address</label><input type="text" id="od-addr" placeholder="Plant name and address" value="${orderData.addr||''}"/></div>
+      <div class="mf"><label>Contact Name</label><input type="text" id="od-contact" placeholder="Procurement contact" value="${orderData.contact||''}"/></div>
+      <div class="mf"><label>Contact Email</label><input type="email" id="od-email" placeholder="email@company.com" value="${orderData.email||''}"/></div>
+      <div class="mf mf-full"><label>Special Instructions</label><input type="text" id="od-notes" placeholder="Optional notes for this order" value="${orderData.notes||''}"/></div>
+    </div>`;
+    footer.innerHTML='<button class="btn-back" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Review Order →</button>';
+  }
+  if(modalStep===3){
+    const sub=cart.reduce((s,c)=>s+c.price*c.qty,0),total=sub+95,oid='PS-'+Date.now().toString().slice(-7);
+    orderData._oid=oid;orderData._total=total;orderData._date=new Date().toLocaleString();
+    body.innerHTML=`<div class="steps"><div class="step done"><div class="step-num">✓</div><div class="step-label">Cart</div></div><div class="step-divider done"></div><div class="step done"><div class="step-num">✓</div><div class="step-label">Details</div></div><div class="step-divider done"></div><div class="step active"><div class="step-num">3</div><div class="step-label">Confirm</div></div></div>
+    <div class="confirm-success"><div class="confirm-check">✓</div><div class="conf-order-id">${oid}</div><div class="conf-sub">Order placed successfully</div>
+    <div class="conf-detail-grid">
+      <div class="conf-detail"><div class="conf-detail-label">PO Reference</div><div class="conf-detail-val">${orderData.po}</div></div>
+      <div class="conf-detail"><div class="conf-detail-label">Estimated Delivery</div><div class="conf-detail-val">${orderData.date}</div></div>
+      <div class="conf-detail"><div class="conf-detail-label">Delivery Address</div><div class="conf-detail-val">${orderData.addr}</div></div>
+      <div class="conf-detail"><div class="conf-detail-label">Order Total</div><div class="conf-detail-val" style="color:var(--teal)">$${total.toFixed(2)}</div></div>
+    </div>
+    <div style="font-size:13px;color:var(--text-mid);margin-bottom:20px">${cart.length} item type(s) · ${cart.reduce((s,c)=>s+c.qty,0)} units total</div>
+    <button class="save-rec-btn" onclick="saveRecord()">⬇ Save Order Record</button></div>`;
+    footer.innerHTML='<span></span><button class="btn-next" onclick="closeModal();resetCart()">Close</button>';
+  }
+}
+function goStep(n){
+  if(n===3){
+    orderData.po=document.getElementById('od-po')?.value||'';
+    orderData.date=calcEstDelivery(Math.max(...cart.map(c=>c.leadDays)));
+    orderData.addr=document.getElementById('od-addr')?.value||'';
+    orderData.contact=document.getElementById('od-contact')?.value||'';
+    orderData.email=document.getElementById('od-email')?.value||'';
+    orderData.notes=document.getElementById('od-notes')?.value||'';
+    if(!orderData.po||!orderData.addr){alert('Please fill required fields.');return;}
+  }
+  modalStep=n;renderModal();
+}
+function updateQty(i,v){cart[i].qty=Math.max(1,parseInt(v)||1);renderModal();updatePill();}
+function removeItem(i){cart.splice(i,1);renderModal();updatePill();}
+function resetCart(){cart=[];updatePill();}
+function saveRecord(){
+  const rows=cart.map(c=>`${c.part},${c.desc},${c.qty},$${c.price.toFixed(2)},$${(c.price*c.qty).toFixed(2)}`);
+  const csv=`ProSeal Solutions — Order Record\nOrder Number:,${orderData._oid}\nDate:,${orderData._date}\nPO Reference:,${orderData.po}\nContact:,${orderData.contact}\nEmail:,${orderData.email}\nDelivery Address:,${orderData.addr}\nDelivery Date:,${orderData.date}\nNotes:,${orderData.notes||'—'}\nOrder Total:,$${orderData._total.toFixed(2)}\n\nPart Number,Description,Qty,Unit Price,Line Total\n${rows.join('\n')}`;
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=orderData._oid+'_record.csv';a.click();
+}
+</script>
+</body>
+</html>
