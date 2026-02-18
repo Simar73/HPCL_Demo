@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SealTech Industries – Client Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628; --navy-mid: #112240; --navy-light: #1e3a5f;
+    --steel: #4a6fa5; --steel-light: #6b8fc4; --accent: #e8a020; --accent-hover: #f0b030;
+    --text-primary: #e8edf5; --text-secondary: #8a9bb8; --border: #1e3a5f;
+    --success: #28a745; --sidebar-w: 220px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: var(--navy); color: var(--text-primary); min-height: 100vh; }
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--navy); background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,58,95,0.4) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,58,95,0.4) 40px); }
+  .login-card { background: var(--navy-mid); border: 1px solid var(--border); width: 420px; padding: 48px 40px; }
+  .login-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 36px; }
+  .login-logo-icon { width: 44px; height: 44px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--navy); font-family: 'IBM Plex Mono', monospace; }
+  .login-logo-text { font-size: 20px; font-weight: 600; letter-spacing: 0.05em; }
+  .login-logo-sub { font-size: 11px; color: var(--text-secondary); letter-spacing: 0.15em; text-transform: uppercase; }
+  .login-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--navy); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .field input:focus { border-color: var(--steel); }
+  .login-btn { width: 100%; background: var(--accent); color: var(--navy); border: none; padding: 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+  .login-btn:hover { background: var(--accent-hover); }
+  .login-hint { font-size: 11px; color: var(--text-secondary); margin-top: 16px; text-align: center; }
+  .login-hint span { color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+  .error-msg { background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); color: #ff6b6b; padding: 10px 12px; font-size: 12px; margin-bottom: 16px; display: none; }
+  #app { display: none; }
+  .topbar { height: 52px; background: var(--navy-mid); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-brand-icon { width: 28px; height: 28px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--navy); font-family: 'IBM Plex Mono', monospace; }
+  .topbar-brand-name { font-size: 14px; font-weight: 600; letter-spacing: 0.05em; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+  .topbar-user { color: var(--accent); font-weight: 500; }
+  .sidebar { position: fixed; left: 0; top: 52px; bottom: 0; width: var(--sidebar-w); background: var(--navy-mid); border-right: 1px solid var(--border); padding-top: 20px; overflow-y: auto; }
+  .sidebar-section { margin-bottom: 24px; }
+  .sidebar-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); padding: 0 16px; margin-bottom: 6px; }
+  .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; }
+  .sidebar-item:hover { background: rgba(74,111,165,0.1); color: var(--text-primary); }
+  .sidebar-item.active { background: rgba(74,111,165,0.15); color: var(--text-primary); border-left-color: var(--accent); }
+  .sidebar-item-icon { font-size: 14px; width: 18px; text-align: center; }
+  .main-content { margin-left: var(--sidebar-w); margin-top: 52px; padding: 28px; min-height: calc(100vh - 52px); }
+  .page { display: none; } .page.active { display: block; }
+  .page-header { margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+  .page-header h1 { font-size: 20px; font-weight: 600; }
+  .page-header p { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .breadcrumb { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 0.05em; }
+  .breadcrumb span { color: var(--accent); }
+  .filters-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-group label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); }
+  .filter-group select, .filter-group input { background: var(--navy-mid); border: 1px solid var(--border); color: var(--text-primary); padding: 7px 10px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; outline: none; min-width: 140px; }
+  .filter-btn { background: var(--steel); color: white; border: none; padding: 7px 16px; font-size: 13px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; align-self: flex-end; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: var(--navy-light); }
+  thead th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(30,58,95,0.5); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(74,111,165,0.06); }
+  tbody td { padding: 10px 12px; color: var(--text-primary); }
+  .stock-badge { display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; }
+  .stock-in { background: rgba(40,167,69,0.15); color: #4cdf78; border: 1px solid rgba(40,167,69,0.3); }
+  .stock-low { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .add-btn { background: var(--accent); color: var(--navy); border: none; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; font-family: 'IBM Plex Sans', sans-serif; }
+  .add-btn:hover { background: var(--accent-hover); }
+  .cart-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+  .qty-input { width: 60px; background: var(--navy); border: 1px solid var(--border); color: var(--text-primary); padding: 4px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-align: center; }
+  .remove-btn { background: transparent; border: 1px solid rgba(220,53,69,0.4); color: #ff6b6b; padding: 4px 10px; cursor: pointer; font-size: 11px; font-family: 'IBM Plex Sans', sans-serif; }
+  .order-summary { background: var(--navy-mid); border: 1px solid var(--border); padding: 20px; }
+  .summary-title { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .summary-line.total { font-weight: 700; font-size: 15px; color: var(--accent); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 6px; }
+  .checkout-btn { width: 100%; background: var(--accent); color: var(--navy); border: none; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; font-family: 'IBM Plex Sans', sans-serif; margin-top: 16px; }
+  .checkout-btn:hover { background: var(--accent-hover); }
+  .confirm-box { max-width: 680px; }
+  .confirm-header { background: rgba(40,167,69,0.1); border: 1px solid rgba(40,167,69,0.3); padding: 20px 24px; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .confirm-icon { font-size: 28px; }
+  .confirm-order-num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500; color: var(--accent); }
+  .confirm-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .detail-section { background: var(--navy-mid); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+  .detail-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-item label { font-size: 10px; color: var(--text-secondary); display: block; margin-bottom: 2px; }
+  .detail-item span { font-size: 13px; }
+  .save-btn { background: var(--steel); color: white; border: none; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; letter-spacing: 0.05em; }
+  .empty-cart { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+  .empty-cart .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--navy-light); }
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">ST</div>
+      <div><div class="login-logo-text">SealTech Industries</div><div class="login-logo-sub">Client Procurement Portal</div></div>
+    </div>
+    <div class="login-title">Authorized Access Only</div>
+    <div class="error-msg" id="login-error">Invalid client ID or password. Please try again.</div>
+    <div class="field"><label>Client ID</label><input type="text" id="username" placeholder="Enter client ID" autocomplete="username"/></div>
+    <div class="field"><label>Password</label><input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/></div>
+    <button class="login-btn" onclick="doLogin()">Access Portal</button>
+    <div class="login-hint">Client ID: <span>sealtech_client</span> &nbsp;/&nbsp; Password: <span>ST@2024!</span></div>
+  </div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand"><div class="topbar-brand-icon">ST</div><div class="topbar-brand-name">SealTech Industries</div></div>
+    <div class="topbar-right"><span>Client Portal v4.2</span><span>|</span><span class="topbar-user">▣ DEMO ACCOUNT</span><span style="cursor:pointer;color:var(--text-secondary)" onclick="logout()">Logout</span></div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Navigation</div>
+      <div class="sidebar-item active" onclick="showPage('catalog')" id="nav-catalog"><span class="sidebar-item-icon">⊞</span> Product Catalog</div>
+      <div class="sidebar-item" onclick="showPage('cart')" id="nav-cart"><span class="sidebar-item-icon">▤</span> Order Cart <span id="cart-count-badge" style="margin-left:auto;background:var(--accent);color:var(--navy);font-size:10px;font-weight:700;padding:1px 6px;display:none"></span></div>
+      <div class="sidebar-item" onclick="showPage('confirmation')" id="nav-confirm" style="display:none"><span class="sidebar-item-icon">✓</span> Order Confirmation</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Account</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">◎</span> Account Settings</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">◫</span> Order History</div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="page active" id="page-catalog">
+      <div class="page-header"><div class="breadcrumb">Portal / <span>Product Catalog</span></div><h1>Mechanical Seal Catalog</h1><p>Browse available seal configurations for your procurement order</p></div>
+      <div class="filters-bar">
+        <div class="filter-group"><label>Seal Type</label><select id="filter-type" onchange="filterProducts()"><option value="">All Types</option><option value="Single">Single Mechanical</option><option value="Double">Double Mechanical</option><option value="Cartridge">Cartridge</option><option value="Split">Split Design</option></select></div>
+        <div class="filter-group"><label>Shaft Size (mm)</label><select id="filter-size" onchange="filterProducts()"><option value="">All Sizes</option><option value="25">25 mm</option><option value="30">30 mm</option><option value="40">40 mm</option><option value="50">50 mm</option><option value="65">65 mm</option><option value="80">80 mm</option></select></div>
+        <div class="filter-group"><label>Part No.</label><input type="text" id="filter-part" placeholder="Search..." oninput="filterProducts()"/></div>
+        <button class="filter-btn" onclick="resetFilters()">Reset</button>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Part Number</th><th>Description</th><th>Type</th><th>Shaft Ø (mm)</th><th>Pressure (bar)</th><th>Material</th><th>Unit Price (USD)</th><th>Stock</th><th>Action</th></tr></thead><tbody id="product-tbody"></tbody></table></div>
+    </div>
+    <div class="page" id="page-cart">
+      <div class="page-header"><div class="breadcrumb">Portal / <span>Order Cart</span></div><h1>Order Cart</h1><p>Review your selection and complete order details</p></div>
+      <div id="cart-empty" class="empty-cart" style="display:none"><div class="icon">◫</div><div>Your cart is empty. <a href="#" onclick="showPage('catalog')" style="color:var(--accent)">Browse catalog</a></div></div>
+      <div id="cart-content">
+        <div class="cart-grid">
+          <div><div class="table-wrap"><table><thead><tr><th>Part Number</th><th>Description</th><th>Unit Price</th><th>Qty</th><th>Line Total</th><th></th></tr></thead><tbody id="cart-tbody"></tbody></table></div></div>
+          <div><div class="order-summary">
+            <div class="summary-title">Order Summary</div>
+            <div class="field" style="margin-bottom:14px"><label>Purchase Order Number</label><input type="text" id="po-number" placeholder="e.g. PO-2024-0891" style="width:100%;background:var(--navy);border:1px solid var(--border);color:var(--text-primary);padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none"/></div>
+            <div class="field" style="margin-bottom:14px"><label>Delivery Address</label><input type="text" id="delivery-addr" placeholder="Plant / Site address" style="width:100%;background:var(--navy);border:1px solid var(--border);color:var(--text-primary);padding:8px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;outline:none"/></div>
+            <div class="field" style="margin-bottom:14px">
+              <label>Estimated Delivery Date</label>
+              <div id="est-delivery-display" style="width:100%;background:rgba(30,58,95,0.4);border:1px solid var(--border);color:var(--text-secondary);padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.03em;"></div>
+              <div data-lead-note style="font-size:10px;color:var(--text-secondary);margin-top:4px;letter-spacing:0.05em;"></div>
+            </div>
+            <div id="summary-lines"></div>
+            <div class="summary-line total"><span>TOTAL (USD)</span><span id="summary-total">$0.00</span></div>
+            <button class="checkout-btn" onclick="placeOrder()">▶ Place Order</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-confirmation">
+      <div class="page-header"><div class="breadcrumb">Portal / <span>Order Confirmation</span></div><h1>Order Confirmed</h1></div>
+      <div class="confirm-box">
+        <div class="confirm-header"><div class="confirm-icon">✓</div><div><div class="confirm-order-num" id="conf-order-num">ST-ORD-000000</div><div class="confirm-sub">Your order has been received and is being processed</div></div></div>
+        <div class="detail-section"><div class="detail-section-title">Order Details</div><div class="detail-grid">
+          <div class="detail-item"><label>Order Number</label><span class="mono" id="conf-oid"></span></div>
+          <div class="detail-item"><label>Order Date &amp; Time</label><span class="mono" id="conf-date"></span></div>
+          <div class="detail-item"><label>Purchase Order Ref.</label><span class="mono" id="conf-po"></span></div>
+          <div class="detail-item"><label>Delivery Address</label><span id="conf-addr"></span></div>
+          <div class="detail-item"><label>Estimated Delivery</label><span id="conf-deldate"></span></div>
+          <div class="detail-item"><label>Order Total (USD)</label><span style="color:var(--accent);font-weight:700" id="conf-total"></span></div>
+        </div></div>
+        <div class="detail-section"><div class="detail-section-title">Items Ordered</div>
+          <table style="font-size:12px"><thead><tr><th>Part No.</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead><tbody id="conf-items"></tbody></table>
+        </div>
+        <button class="save-btn" onclick="saveRecord()">⬇ Save Order Record</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const PRODUCTS = [
+  {id:"ST-SM-025-SIC",part:"ST-SM-025-SIC",desc:"Single Mech. Seal, SiC/SiC faces",type:"Single",shaft:25,pressure:16,material:"SiC/SiC",price:148.00,stock:"In Stock",leadDays:5},
+  {id:"ST-SM-030-TC",part:"ST-SM-030-TC",desc:"Single Mech. Seal, TC/Carbon faces",type:"Single",shaft:30,pressure:16,material:"TC/Carbon",price:165.00,stock:"In Stock",leadDays:5},
+  {id:"ST-SM-040-SIC",part:"ST-SM-040-SIC",desc:"Single Mech. Seal, SiC/SiC faces",type:"Single",shaft:40,pressure:20,material:"SiC/SiC",price:192.00,stock:"In Stock",leadDays:7},
+  {id:"ST-SM-050-AL",part:"ST-SM-050-AL",desc:"Single Mech. Seal, Al2O3/Carbon faces",type:"Single",shaft:50,pressure:16,material:"Al2O3/Carbon",price:175.00,stock:"In Stock",leadDays:10},
+  {id:"ST-DM-040-SIC",part:"ST-DM-040-SIC",desc:"Double Mech. Seal, SiC/SiC faces",type:"Double",shaft:40,pressure:25,material:"SiC/SiC",price:385.00,stock:"In Stock",leadDays:7},
+  {id:"ST-DM-050-TC",part:"ST-DM-050-TC",desc:"Double Mech. Seal, TC/TC faces",type:"Double",shaft:50,pressure:30,material:"TC/TC",price:420.00,stock:"In Stock",leadDays:7},
+  {id:"ST-DM-065-TC",part:"ST-DM-065-TC",desc:"Double Mech. Seal, TC/Carbon faces",type:"Double",shaft:65,pressure:25,material:"TC/Carbon",price:455.00,stock:"In Stock",leadDays:12},
+  {id:"ST-CT-040-SIC",part:"ST-CT-040-SIC",desc:"Cartridge Mech. Seal, SiC/SiC faces",type:"Cartridge",shaft:40,pressure:20,material:"SiC/SiC",price:620.00,stock:"In Stock",leadDays:10},
+  {id:"ST-CT-050-TC",part:"ST-CT-050-TC",desc:"Cartridge Mech. Seal, TC/Carbon faces",type:"Cartridge",shaft:50,pressure:25,material:"TC/Carbon",price:680.00,stock:"In Stock",leadDays:10},
+  {id:"ST-CT-065-SIC",part:"ST-CT-065-SIC",desc:"Cartridge Mech. Seal, SiC/SiC faces",type:"Cartridge",shaft:65,pressure:25,material:"SiC/SiC",price:750.00,stock:"In Stock",leadDays:14},
+  {id:"ST-SP-065-SIC",part:"ST-SP-065-SIC",desc:"Split Mech. Seal, SiC/SiC faces",type:"Split",shaft:65,pressure:12,material:"SiC/SiC",price:920.00,stock:"In Stock",leadDays:15},
+  {id:"ST-SP-080-TC",part:"ST-SP-080-TC",desc:"Split Mech. Seal, TC/TC faces",type:"Split",shaft:80,pressure:12,material:"TC/TC",price:980.00,stock:"In Stock",leadDays:15},
+];
+let cart = [];
+function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  if (u === 'sealtech_client' && p === 'ST@2024!') { document.getElementById('login-screen').style.display='none'; document.getElementById('app').style.display='block'; renderProducts(PRODUCTS); }
+  else { document.getElementById('login-error').style.display='block'; }
+}
+document.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+function logout() { document.getElementById('login-screen').style.display='flex'; document.getElementById('app').style.display='none'; }
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const nav=document.getElementById('nav-'+name); if(nav) nav.classList.add('active');
+  if(name==='cart') renderCart();
+}
+function renderProducts(list) {
+  document.getElementById('product-tbody').innerHTML = list.map(p=>`<tr>
+    <td class="mono">${p.part}</td><td>${p.desc}</td><td>${p.type}</td>
+    <td style="text-align:center">${p.shaft}</td><td style="text-align:center">${p.pressure}</td>
+    <td>${p.material}</td><td class="mono">$${p.price.toFixed(2)}</td>
+    <td><span class="stock-badge ${p.stock==='In Stock'?'stock-in':'stock-low'}">${p.stock}</span></td>
+    <td><button class="add-btn" onclick="addToCart('${p.id}')">Add to Order</button></td>
+  </tr>`).join('');
+}
+function filterProducts() {
+  const t=document.getElementById('filter-type').value, s=document.getElementById('filter-size').value, q=document.getElementById('filter-part').value.toLowerCase();
+  renderProducts(PRODUCTS.filter(p=>(!t||p.type===t)&&(!s||p.shaft===parseInt(s))&&(!q||p.part.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q))));
+}
+function resetFilters() { document.getElementById('filter-type').value=''; document.getElementById('filter-size').value=''; document.getElementById('filter-part').value=''; renderProducts(PRODUCTS); }
+function addToCart(id) { const prod=PRODUCTS.find(p=>p.id===id), ex=cart.find(c=>c.id===id); if(ex) ex.qty++; else cart.push({...prod,qty:1}); updateCartBadge(); }
+function updateCartBadge() { const badge=document.getElementById('cart-count-badge'), total=cart.reduce((s,c)=>s+c.qty,0); badge.textContent=total; badge.style.display=total>0?'inline':'none'; }
+function calcEstDelivery(days) { const date=new Date(); date.setDate(date.getDate()+days); return date.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+function renderCart() {
+  const empty=document.getElementById('cart-empty'), content=document.getElementById('cart-content');
+  if(cart.length===0){ empty.style.display='block'; content.style.display='none'; return; }
+  empty.style.display='none'; content.style.display='block';
+  const maxLead=Math.max(...cart.map(c=>c.leadDays));
+  document.getElementById('est-delivery-display').textContent=calcEstDelivery(maxLead);
+  document.querySelector('[data-lead-note]').textContent=`LONGEST LEAD TIME IN ORDER: ${maxLead} DAYS`;
+  document.getElementById('cart-tbody').innerHTML=cart.map((c,i)=>`<tr>
+    <td class="mono">${c.part}</td><td>${c.desc}</td><td class="mono">$${c.price.toFixed(2)}</td>
+    <td><input class="qty-input" type="number" min="1" value="${c.qty}" onchange="updateQty(${i},this.value)"/></td>
+    <td class="mono">$${(c.price*c.qty).toFixed(2)}</td>
+    <td><button class="remove-btn" onclick="removeFromCart(${i})">Remove</button></td>
+  </tr>`).join('');
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0), ship=85, total=sub+ship;
+  document.getElementById('summary-lines').innerHTML=`<div class="summary-line"><span>Subtotal</span><span>$${sub.toFixed(2)}</span></div><div class="summary-line"><span>Shipping & Handling</span><span>$${ship.toFixed(2)}</span></div>`;
+  document.getElementById('summary-total').textContent='$'+total.toFixed(2);
+}
+function updateQty(i,v){cart[i].qty=Math.max(1,parseInt(v)||1);renderCart();updateCartBadge();}
+function removeFromCart(i){cart.splice(i,1);renderCart();updateCartBadge();}
+function placeOrder(){
+  if(cart.length===0){alert('Your cart is empty.');return;}
+  const po=document.getElementById('po-number').value.trim(), addr=document.getElementById('delivery-addr').value.trim();
+  if(!po||!addr){alert('Please fill in all order details.');return;}
+  const ddate=document.getElementById('est-delivery-display').textContent;
+  const orderId='ST-ORD-'+Date.now().toString().slice(-6), now=new Date().toLocaleString();
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0), total=sub+85;
+  document.getElementById('conf-order-num').textContent=orderId;
+  document.getElementById('conf-oid').textContent=orderId;
+  document.getElementById('conf-date').textContent=now;
+  document.getElementById('conf-po').textContent=po;
+  document.getElementById('conf-addr').textContent=addr;
+  document.getElementById('conf-deldate').textContent=ddate;
+  document.getElementById('conf-total').textContent='$'+total.toFixed(2);
+  document.getElementById('conf-items').innerHTML=cart.map(c=>`<tr><td class="mono">${c.part}</td><td>${c.desc}</td><td style="text-align:center">${c.qty}</td><td class="mono">$${c.price.toFixed(2)}</td><td class="mono">$${(c.price*c.qty).toFixed(2)}</td></tr>`).join('');
+  document.getElementById('nav-confirm').style.display='flex';
+  showPage('confirmation'); cart=[]; updateCartBadge();
+}
+function saveRecord(){
+  const id=document.getElementById('conf-oid').textContent, date=document.getElementById('conf-date').textContent;
+  const po=document.getElementById('conf-po').textContent, addr=document.getElementById('conf-addr').textContent;
+  const total=document.getElementById('conf-total').textContent;
+  const rows=Array.from(document.querySelectorAll('#conf-items tr')).map(r=>{const c=r.querySelectorAll('td');return `${c[0].textContent},${c[1].textContent},${c[2].textContent},${c[3].textContent},${c[4].textContent}`;});
+  const csv=`SealTech Industries - Order Record\nOrder Number:,${id}\nDate:,${date}\nPO Reference:,${po}\nDelivery Address:,${addr}\nOrder Total:,${total}\n\nPart Number,Description,Qty,Unit Price,Line Total\n${rows.join('\n')}`;
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=id+'_record.csv'; a.click();
+}
+</script>
+</body>
+</html>
