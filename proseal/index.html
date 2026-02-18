@@ -149,6 +149,11 @@ const PRODUCTS = [
   {id:"PS-200-40",part:"PS-200-40",desc:"Double Seal — 40mm shaft",type:"Double",shaft:40,pressure:25,material:"SiC/SiC",price:378.00,emoji:"🔩",stock:true,leadDays:6},
   {id:"PS-200-50",part:"PS-200-50",desc:"Double Seal — 50mm shaft",type:"Double",shaft:50,pressure:30,material:"TC/TC",price:415.00,emoji:"🔩",stock:true,leadDays:6},
   {id:"PS-200-65",part:"PS-200-65",desc:"Double Seal — 65mm shaft",type:"Double",shaft:65,pressure:25,material:"TC/Carbon",price:448.00,emoji:"🔩",stock:true,leadDays:10},
+  {id:"PS-300-40",part:"PS-300-40",desc:"Cartridge Seal — 40mm shaft",type:"Cartridge",shaft:40,pressure:20,material:"SiC/SiC",price:595.00,emoji:"🛠️",stock:true,leadDays:8},
+  {id:"PS-300-50",part:"PS-300-50",desc:"Cartridge Seal — 50mm shaft",type:"Cartridge",shaft:50,pressure:25,material:"TC/Carbon",price:660.00,emoji:"🛠️",stock:true,leadDays:8},
+  {id:"PS-300-65",part:"PS-300-65",desc:"Cartridge Seal — 65mm shaft",type:"Cartridge",shaft:65,pressure:25,material:"SiC/SiC",price:730.00,emoji:"🛠️",stock:true,leadDays:10},
+  {id:"PS-400-65",part:"PS-400-65",desc:"Split Seal — 65mm shaft",type:"Split",shaft:65,pressure:12,material:"SiC/SiC",price:890.00,emoji:"🔧",stock:true,leadDays:12},
+  {id:"PS-400-80",part:"PS-400-80",desc:"Split Seal — 80mm shaft",type:"Split",shaft:80,pressure:12,material:"TC/TC",price:950.00,emoji:"🔧",stock:true,leadDays:14},
 ];
 let cart=[],activeFilter='',modalStep=1,orderData={};
 function calcEstDelivery(days){const date=new Date();date.setDate(date.getDate()+days);return date.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
